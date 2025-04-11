@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Não Seguidores Checker</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #00ff88;
+      margin-bottom: 10px;
+    }
+    .upload-box {
+      background-color: #1a1a1a;
+      border: 2px dashed #00ff88;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    input[type="file"] {
+      color: white;
+    }
+    button {
+      background-color: #00ff88;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: black;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00cc6a;
+    }
+    .result-box {
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      max-width: 600px;
+      width: 100%;
+    }
+    .result-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .result-box li {
+      margin: 5px 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Não Seguidores Pro (Versão Web)</h1>
+  <div class="upload-box">
+    <p>Envie dois arquivos de texto: <strong>seguidores.txt</strong> e <strong>seguidos.txt</strong></p>
+    <input type="file" id="seguidoresFile" accept=".txt"><br><br>
+    <input type="file" id="seguidosFile" accept=".txt"><br><br>
+    <button onclick="compararListas()">Ver quem não te segue de volta</button>
+  </div>
+  <div id="resultado" class="result-box" style="display:none">
+    <h2>Não te seguem de volta:</h2>
+    <ul id="lista"></ul>
+  </div>
+
+  <script>
+    function lerArquivo(input, callback) {
+      const reader = new FileReader();
+      reader.onload = () => callback(reader.result.split(/\r?\n/).filter(Boolean));
+      reader.readAsText(input.files[0]);
+    }
+
+    function compararListas() {
+      const seguidoresInput = document.getElementById('seguidoresFile');
+      const seguidosInput = document.getElementById('seguidosFile');
+
+      if (!seguidoresInput.files[0] || !seguidosInput.files[0]) {
+        alert("Por favor, envie os dois arquivos.");
+        return;
+      }
+
+      lerArquivo(seguidoresInput, seguidores => {
+        lerArquivo(seguidosInput, seguidos => {
+          const naoSeguidores = seguidos.filter(user => !seguidores.includes(user));
+          const lista = document.getElementById("lista");
+          lista.innerHTML = "";
+          naoSeguidores.forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = user;
+            lista.appendChild(li);
+          });
+          document.getElementById("resultado").style.display = "block";
+        });
+      });
+    }
+  </script>
+</body>
+</html>
